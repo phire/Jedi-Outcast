@@ -723,7 +723,7 @@ static void keyConcatArgs( void ) {
 static void ConcatRemaining( const char *src, const char *start ) {
 	char *str;
 
-	str = strstr(src, start);
+	str = (char *) strstr(src, start);
 	if (!str) {
 		keyConcatArgs();
 		return;

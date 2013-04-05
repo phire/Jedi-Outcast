@@ -1330,12 +1330,3 @@ int irand(int min, int max)
 	result = ((result * (max - min)) >> 15) + min;
 	return(result);
 }
-
-float powf ( float x, int y )
-{
-	float r = x;
-	for ( y--; y>0; y-- )
-		r = r * r;
-	return r;
-}
-
