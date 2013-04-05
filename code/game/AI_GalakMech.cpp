@@ -38,7 +38,7 @@ static qboolean enemyLOS;
 static qboolean enemyCS;
 static qboolean hitAlly;
 static qboolean faceEnemy;
-static qboolean move;
+static qboolean doMove;
 static qboolean shoot;
 static float	enemyDist;
 static vec3_t	impactPos;
@@ -428,7 +428,7 @@ static void GM_CheckMoveState( void )
 {
 	if ( Q3_TaskIDPending( NPC, TID_MOVE_NAV ) )
 	{//moving toward a goal that a script is waiting on, so don't stop for anything!
-		move = qtrue;
+		doMove = qtrue;
 	}
 
 	//See if we're moving towards a goal, not the enemy
@@ -484,7 +484,7 @@ static void GM_CheckFireState( void )
 					vec3_t	forward, end;
 					AngleVectors( NPC->client->ps.viewangles, forward, NULL, NULL );
 					VectorMA( muzzle, 8192, forward, end );
-					gi.trace( &tr, muzzle, vec3_origin, vec3_origin, end, NPC->s.number, MASK_SHOT );
+					gi.trace( &tr, muzzle, vec3_origin, vec3_origin, end, NPC->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 					VectorCopy( tr.endpos, impactPos );
 				}
 
@@ -652,7 +652,7 @@ void NPC_BSGM_Attack( void )
 	}
 
 	enemyLOS = enemyCS = qfalse;
-	move = qtrue;
+	doMove = qtrue;
 	faceEnemy = qfalse;
 	shoot = qfalse;
 	hitAlly = qfalse;
@@ -750,7 +750,7 @@ void NPC_BSGM_Attack( void )
 				trace_t	trace;
 				vec3_t	end, mins={-3,-3,-3}, maxs={3,3,3};
 				VectorMA( NPC->client->renderInfo.muzzlePoint, 1024, NPC->client->renderInfo.muzzleDir, end );
-				gi.trace( &trace, NPC->client->renderInfo.muzzlePoint, mins, maxs, end, NPC->s.number, MASK_SHOT );
+				gi.trace( &trace, NPC->client->renderInfo.muzzlePoint, mins, maxs, end, NPC->s.number, MASK_SHOT, (EG2_Collision)0, 0 );
 				if ( trace.allsolid || trace.startsolid )
 				{//oops, in a wall
 					if ( NPCInfo->coverTarg )
@@ -967,7 +967,7 @@ void NPC_BSGM_Attack( void )
 		}
 		if ( NPCInfo->goalEntity == NPC->enemy )
 		{//for now, always chase the enemy
-			move = qtrue;
+			doMove = qtrue;
 		}
 	}
 	if ( enemyCS )
@@ -983,7 +983,7 @@ void NPC_BSGM_Attack( void )
 		}
 		if ( NPCInfo->goalEntity == NPC->enemy )
 		{//for now, always chase the enemy
-			move = qtrue;
+			doMove = qtrue;
 		}
 	}
 
@@ -1046,17 +1046,17 @@ void NPC_BSGM_Attack( void )
 
 	if ( !TIMER_Done( NPC, "standTime" ) )
 	{
-		move = qfalse;
+		doMove = qfalse;
 	}
 	if ( !(NPCInfo->scriptFlags&SCF_CHASE_ENEMIES) )
 	{//not supposed to chase my enemies
 		if ( NPCInfo->goalEntity == NPC->enemy )
 		{//goal is my entity, so don't move
-			move = qfalse;
+			doMove = qfalse;
 		}
 	}
 
-	if ( move && !NPC->lockCount )
+	if ( doMove && !NPC->lockCount )
 	{//move toward goal
 		if ( NPCInfo->goalEntity 
 			&& NPC->client->ps.legsAnim != BOTH_ALERT1
@@ -1065,11 +1065,11 @@ void NPC_BSGM_Attack( void )
 			&& NPC->client->ps.legsAnim != BOTH_ATTACK5 
 			&& NPC->client->ps.legsAnim != BOTH_ATTACK7 )
 		{
-			move = GM_Move();
+			doMove = GM_Move();
 		}
 		else
 		{
-			move = qfalse;
+			doMove = qfalse;
 		}
 	}
 
@@ -1082,11 +1082,11 @@ void NPC_BSGM_Attack( void )
 
 	if ( !faceEnemy )
 	{//we want to face in the dir we're running
-		if ( !move )
+		if ( !doMove )
 		{//if we haven't moved, we should look in the direction we last looked?
 			VectorCopy( NPC->client->ps.viewangles, NPCInfo->lastPathAngles );
 		}
-		if ( move )
+		if ( doMove )
 		{//don't run away and shoot
 			NPCInfo->desiredYaw = NPCInfo->lastPathAngles[YAW];
 			NPCInfo->desiredPitch = 0;
@@ -1216,7 +1216,7 @@ void NPC_BSGM_Default( void )
 		{//armor regenerated, turn shield back on
 			//do a trace and make sure we can turn this back on?
 			trace_t	tr;
-			gi.trace( &tr, NPC->currentOrigin, shieldMins, shieldMaxs, NPC->currentOrigin, NPC->s.number, NPC->clipmask );
+			gi.trace( &tr, NPC->currentOrigin, shieldMins, shieldMaxs, NPC->currentOrigin, NPC->s.number, NPC->clipmask, (EG2_Collision)0, 0 );
 			if ( !tr.startsolid )
 			{
 				VectorCopy( shieldMins, NPC->mins );

@@ -158,7 +158,7 @@ void CalcEntitySpot ( const gentity_t *ent, const spot_t spot, vec3_t point )
 		start[2] = ent->absmin[2];
 		VectorCopy( start, end );
 		end[2] -= 64;
-		gi.trace( &tr, start, ent->mins, ent->maxs, end, ent->s.number, MASK_PLAYERSOLID );
+		gi.trace( &tr, start, ent->mins, ent->maxs, end, ent->s.number, MASK_PLAYERSOLID, (EG2_Collision)0, 0 );
 		if ( tr.fraction < 1.0 ) 
 		{
 			VectorCopy( tr.endpos, point);
@@ -1039,7 +1039,7 @@ int NPC_FindNearestEnemy( gentity_t *ent )
 	//Get a number of entities in a given space
 	numEnts = gi.EntitiesInBox( mins, maxs, radiusEnts, MAX_RADIUS_ENTS );
 
-	for ( i = 0; i < numEnts; i++ )
+	for (int i = 0; i < numEnts; i++ )
 	{
 		//Don't consider self
 		if ( radiusEnts[i] == ent )

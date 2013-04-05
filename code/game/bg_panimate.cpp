@@ -1016,7 +1016,7 @@ qboolean PM_CheckEnemyInBack( float backCheckDist )
 	AngleVectors( fwdAngles, fwd, NULL, NULL );
 	VectorMA( pm->ps->origin, -backCheckDist, fwd, end );
 
-	pm->trace( &trace, pm->ps->origin, vec3_origin, vec3_origin, end, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY );
+	pm->trace( &trace, pm->ps->origin, vec3_origin, vec3_origin, end, pm->ps->clientNum, CONTENTS_SOLID|CONTENTS_BODY, (EG2_Collision)0, 0 );
 	if ( trace.fraction < 1.0f && trace.entityNum < ENTITYNUM_WORLD )
 	{
 		gentity_t *traceEnt = &g_entities[trace.entityNum];
@@ -1986,7 +1986,7 @@ int PM_AnimLength( int index, animNumber_t anim )
 	if ( ValidAnimFileIndex( index ) == false )
 		return 0;
 
-	return level.knownAnimFileSets[index].animations[anim].numFrames * fabs(level.knownAnimFileSets[index].animations[anim].frameLerp);
+	return level.knownAnimFileSets[index].animations[anim].numFrames * fabs((double)level.knownAnimFileSets[index].animations[anim].frameLerp);
 }
 
 /*
@@ -2393,12 +2393,12 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 #endif
 							gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->lowerLumbarBone, //gent->upperLumbarBone
 								firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-								animSpeed, cg.time);
+								animSpeed, cg.time, -1, -1);
 							if ( gent->motionBone != -1 )
 							{
 								gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->motionBone,
 									firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-									animSpeed, cg.time);
+									animSpeed, cg.time, -1, -1);
 							}
 						}
 					}
@@ -2414,13 +2414,13 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 		{//FIXME: allow to set a specific time?
 			if ( timeScaleMod != 1.0 )
 			{
-				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames - 1) * fabs((double)animations[anim].frameLerp) / (double)timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.
 				int dur;
 				
-				dur = (animations[anim].numFrames -1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames -1) * fabs((double)animations[anim].frameLerp);
 				//dur = ((int)(dur/50.0)) * 50;
 				//dur -= blendTime;
 				if (dur > 1)
@@ -2429,12 +2429,12 @@ void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,
 				}
 				else
 				{
-					PM_SetTorsoAnimTimer( gent, torsoAnimTimer, fabs(animations[anim].frameLerp) );
+					PM_SetTorsoAnimTimer( gent, torsoAnimTimer, fabs((double)animations[anim].frameLerp) );
 				}
 			}
 			else
 			{
-				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames ) * fabs(animations[anim].frameLerp) );
+				PM_SetTorsoAnimTimer( gent, torsoAnimTimer, (animations[anim].numFrames ) * fabs((double)animations[anim].frameLerp) );
 			}
 		}
 	}
@@ -2615,7 +2615,7 @@ setAnimLegs:
 #endif
 						gi.G2API_SetBoneAnimIndex(&gent->ghoul2[gent->playerModel], gent->rootBone, 
 							firstFrame, lastFrame, animFlags&~BONE_ANIM_BLEND, 
-							animSpeed, cg.time);
+							animSpeed, cg.time, -1, -1);
 					}
 				}
 			}
@@ -2630,13 +2630,13 @@ setAnimLegs:
 		{//FIXME: allow to set a specific time?
 			if ( timeScaleMod != 1.0 )
 			{
-				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * fabs(animations[anim].frameLerp) / timeScaleMod );
+				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames - 1) * fabs((double)animations[anim].frameLerp) / timeScaleMod );
 			}
 			else if ( setAnimFlags & SETANIM_FLAG_HOLDLESS )
 			{	// Make sure to only wait in full 1/20 sec server frame intervals.
 				int dur;
 				
-				dur = (animations[anim].numFrames -1) * fabs(animations[anim].frameLerp);
+				dur = (animations[anim].numFrames -1) * fabs((double)animations[anim].frameLerp);
 				//dur = ((int)(dur/50.0)) * 50;
 				//dur -= blendTime;
 				if (dur > 1)
@@ -2645,12 +2645,12 @@ setAnimLegs:
 				}
 				else
 				{
-					PM_SetLegsAnimTimer( gent, legsAnimTimer, fabs(animations[anim].frameLerp) );
+					PM_SetLegsAnimTimer( gent, legsAnimTimer, fabs((double)animations[anim].frameLerp) );
 				}
 			}
 			else
 			{
-				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames ) * fabs(animations[anim].frameLerp) );
+				PM_SetLegsAnimTimer( gent, legsAnimTimer, (animations[anim].numFrames ) * fabs((double)animations[anim].frameLerp) );
 			}
 		}
 	}

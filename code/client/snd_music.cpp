@@ -926,7 +926,7 @@ qboolean Music_AllowedToTransition( float			fPlayingTimeElapsed,
 			itp.second++;	// increase range to one beyond, so we can do normal STL being/end looping below
 		for (MusicExitTimes_t::iterator it = itp.first; it != itp.second; ++it)
 		{
-			MusicExitTime_t *pExitTime = it;
+			MusicExitTime_t *pExitTime = it._Ptr;
 			
 			if ( fabs(pExitTime->fTime - fPlayingTimeElapsed) <= fTimeEpsilon )
 			{

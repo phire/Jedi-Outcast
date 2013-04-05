@@ -1039,7 +1039,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		//add leaning offset
 		leanOffset = cg.snap->ps.leanofs * 0.25f;
-		fovOffset += fabs(cg.snap->ps.leanofs) * -0.1f;
+		fovOffset += fabs((double)cg.snap->ps.leanofs) * -0.1f;
 	}
 	else
 	{
@@ -1265,7 +1265,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 				ct = 1;
 			}
 
-			for ( i = 0; i < ct; i++ )
+			for ( int i = 0; i < ct; i++ )
 			{
 				theFxScheduler.PlayEffect( "repeater/muzzle_smoke", cent->currentState.clientNum );
 			}

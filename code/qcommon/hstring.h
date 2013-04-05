@@ -144,10 +144,10 @@ public:
 	}
 		
 	// return maximum number of elements that can be allocated
-	size_type max_size () const
-	{
-	   return mMaxSize;
-	}
+	//size_type max_size () const
+	//{
+	//   return mMaxSize;
+	//}
 	
 	// allocate but don't initialize num elements of type T
 	pointer allocate (size_type num, const void* = 0) 

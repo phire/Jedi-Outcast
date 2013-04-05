@@ -128,6 +128,7 @@ class DLLFFC CFeelProject
 		CFeelDevice *pDevice
 		);
 
+	void
 	LoadProjectObjectPointer(
 		BYTE *pMem,
 		CFeelDevice *pDevice
